@@ -1,0 +1,33 @@
+---
+
+- name: Create Django Super User
+  sudo: true
+  sudo_user: "{{ user.name }}"
+  django_manage:
+    app_path: "{{ module_path }}"
+    command: 'createsuperuser --noinput --username={{ user_name }} --email={{ user_email }}'
+    virtualenv: "{{ virtualenv_path }}"
+  ignore_errors: true
+  register: django_user_created
+
+- name: Copy Django Password Change File
+  sudo: true
+  template:
+    src: 'tmp/django-passwd.exp.j2'
+    dest: '/tmp/django-passwd.exp'
+  when: django_user_created|success
+
+- name: Change the Django User Password
+  sudo: true
+  sudo_user: "{{ user.name }}"
+  shell: ". {{ virtualenv_path|quote }}/bin/activate && /usr/bin/expect /tmp/djando-passwd.exp {{ user_name }} {{ user_key }}"
+  args:
+    chdir: "{{ module_path }}"
+  when: django_user_created|success
+
+- name: Delete Django Password file
+  sudo: true
+  file: 
+    path: "/tmp/djando-passwd.exp"
+    state: 'absent'
+  when: django_user_created|success
