@@ -18,17 +18,17 @@ Follow this steps:
 
 ----------
 
-{% highlight bash %}
-#!/usr/bin/expect
+```
+  #!/usr/bin/expect
 
-set user [lindex $argv 0]
-set key [lindex $argv 1]
+  set user [lindex $argv 0]
+  set key [lindex $argv 1]
 
-spawn python manage.py changepassword ${user}
-expect "*Password:*"
-send "${key}\r"
-expect "*(again)*"
-send "${key}\r"
-{% endhighlight %}
+  spawn python manage.py changepassword ${user}
+  expect "*Password:*"
+  send "${key}\r"
+  expect "*(again)*"
+  send "${key}\r"
+```
 
 ----------
